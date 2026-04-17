@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Candidatures</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Gestion des Candidatures</h2>
+
+  <form id="form" class="card p-4 mb-4">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <input type="text" id="nom" class="form-control" placeholder="Nom complet">
+      </div>
+
+      <div class="col-md-6">
+        <input type="text" id="ville" class="form-control" placeholder="Ville">
+      </div>
+
+      <div class="col-md-6">
+        <input type="text" id="competence" class="form-control" placeholder="Compétence">
+      </div>
+
+      <div class="col-md-6">
+        <select id="dispo" class="form-control">
+          <option value="">Disponibilité</option>
+          <option>Semaine</option>
+          <option>Week-end</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <select id="mission" class="form-control">
+          <option value="">Type de mission</option>
+          <option>Médical</option>
+          <option>Éducation</option>
+          <option>Distribution</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <input type="email" id="email" class="form-control" placeholder="Email">
+      </div>
+
+      <div class="col-md-6">
+        <input type="password" id="password" class="form-control" placeholder="Mot de passe">
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary w-100">Ajouter</button>
+      </div>
+
+    </div>
+  </form>
+
+  <table class="table table-bordered bg-white text-center">
+    <thead class="table-dark">
+      <tr>
+        <th><input type="checkbox" onclick="toggleAll(this)"></th>
+        <th>#</th>
+        <th>Nom</th>
+        <th>Ville</th>
+        <th>Compétence</th>
+        <th>Disponibilité</th>
+        <th>Mission</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <button class="btn btn-danger w-100" onclick="supprimer()">Supprimer sélection</button>
+
+</div>
+
+<script>
+let candidatures = []
+
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault()
+
+  let nom = document.getElementById("nom").value.trim()
+  let ville = document.getElementById("ville").value.trim()
+  let competence = document.getElementById("competence").value.trim()
+  let dispo = document.getElementById("dispo").value
+  let mission = document.getElementById("mission").value
+  let email = document.getElementById("email").value.trim()
+  let password = document.getElementById("password").value.trim()
+
+  if(!nom || !ville || !competence || !dispo || !mission || !email || !password){
+    alert("Remplir tous les champs")
+    return
+  }
+
+  if(password.length <= 6){
+    alert("Mot de passe > 6 caractères")
+    return
+  }
+
+  let c = {nom, ville, competence, dispo, mission}
+  candidatures.push(c)
+
+  afficher()
+  this.reset()
+})
+
+function afficher(){
+  let tbody = document.getElementById("tableBody")
+  tbody.innerHTML = ""
+
+  candidatures.forEach((c, i)=>{
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox" class="check" data-index="${i}"></td>
+        <td>${i+1}</td>
+        <td>${c.nom}</td>
+        <td>${c.ville}</td>
+        <td>${c.competence}</td>
+        <td>${c.dispo}</td>
+        <td>${c.mission}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="deleteOne(${i})">X</button>
+        </td>
+      </tr>`
+  })
+}
+
+function toggleAll(source){
+  let checks = document.querySelectorAll(".check")
+  checks.forEach(c => c.checked = source.checked)
+}
+
+function supprimer(){
+  let checks = document.querySelectorAll(".check:checked")
+
+  if(checks.length === 0){
+    alert("Sélectionner au moins une ligne")
+    return
+  }
+
+  if(confirm("vous voulez supprimer ?")){
+    let indexes = []
+
+    checks.forEach(c => {
+      indexes.push(parseInt(c.getAttribute("data-index")))
+    })
+
+    indexes.sort((a,b)=>b-a)
+
+    indexes.forEach(i => {
+      candidatures.splice(i,1)
+    })
+
+    afficher()
+  }
+}
+
+function deleteOne(i){
+  if(confirm("vous voulez supprimer ?")){
+    candidatures.splice(i,1)
+    afficher()
+  }
+}
+</script>
+
+</body>
+</html>
